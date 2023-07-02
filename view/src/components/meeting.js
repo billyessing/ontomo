@@ -124,11 +124,11 @@ const Meeting = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const authToken = localStorage.getItem('AuthToken');
+        const authToken = sessionStorage.getItem('AuthToken');
         axios.defaults.headers.common = { Authorization: `${authToken}` };
 
-        const responseMeetings = await axios.get('/meetings');
-        const responseUser = await axios.get('/user');
+        const responseMeetings = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/meetings`);
+        const responseUser = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/user`);
 
         setMeetings(responseMeetings.data);
         setUser(responseUser.data.userCredentials);
@@ -144,17 +144,17 @@ const Meeting = () => {
 
   const deleteMeetingHandler = async (data) => {
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = sessionStorage.getItem('AuthToken');
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     const meetingId = data.meeting.meetingId;
 
     try {
-      await axios.delete(`meeting/${meetingId}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL_API}/meeting/${meetingId}`);
       // Fetch the updated data and update the state
-      const response = await axios.get('/meetings');
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/meetings`);
       setMeetings(response.data);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setDeletingMeetingId(null);
     }
@@ -185,7 +185,7 @@ const Meeting = () => {
   const handleSubmit = async (event) => {
     authMiddleWare(navigate);
     event.preventDefault();
-    const link = (await axios.post('create-room')).data.roomUrl
+    const link = (await axios.post(`${process.env.REACT_APP_BASE_URL_API}/create-room`)).data.roomUrl
 
     const userMeeting = {
       title: title,
@@ -194,25 +194,25 @@ const Meeting = () => {
     let options = {};
     if (buttonType === 'Edit') {
       options = {
-        url: `/meeting/${meetingId}`,
+        url: `${process.env.REACT_APP_BASE_URL_API}/meeting/${meetingId}`,
         method: 'put',
         data: userMeeting
       };
     } else {
       options = {
-        url: '/meeting',
+        url: `${process.env.REACT_APP_BASE_URL_API}/meeting`,
         method: 'post',
         data: userMeeting
       };
     }
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = sessionStorage.getItem('AuthToken');
     axios.defaults.headers.common = { Authorization: `${authToken}` };
 
     try {
       await axios(options);
       setOpen(false);
       // Fetch the updated data and update the state
-      const response = await axios.get('/meetings');
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/meetings`);
       setMeetings(response.data);
     } catch (error) {
       setOpen(true);

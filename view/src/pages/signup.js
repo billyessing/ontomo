@@ -68,8 +68,8 @@ const Signup = ({ classes }) => {
 
 
     try {
-      const response = await axios.post('/signup', newUserData);
-      localStorage.setItem('AuthToken', `Bearer ${response.data.token}`);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL_API}/signup`, newUserData);
+      sessionStorage.setItem('AuthToken', `Bearer ${response.data.token}`);
       setState({ ...state, loading: false });
       navigate('/');
     } catch (error) {

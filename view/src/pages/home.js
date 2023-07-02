@@ -79,16 +79,16 @@ const Home = () => {
   };
 
   const logoutHandler = () => {
-    localStorage.removeItem('AuthToken');
+    sessionStorage.removeItem('AuthToken');
     navigate('/login');
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const authToken = localStorage.getItem('AuthToken');
+        const authToken = sessionStorage.getItem('AuthToken');
         axios.defaults.headers.common = { Authorization: `${authToken}` };
-        const response = await axios.get('/user');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/user`);
         const userCredentials = response.data.userCredentials;
         
         authMiddleWare(navigate);

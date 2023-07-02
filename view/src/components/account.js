@@ -81,10 +81,10 @@ const Account = () => {
 
   useEffect(() => {
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = sessionStorage.getItem('AuthToken');
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
-      .get('/user')
+      .get(`${process.env.REACT_APP_BASE_URL_API}/user`)
       .then((response) => {
         setUser((prevUser) => ({
           ...prevUser,
@@ -123,13 +123,13 @@ const Account = () => {
     event.preventDefault();
     setUiLoading(true);
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = sessionStorage.getItem('AuthToken');
     let form_data = new FormData();
     form_data.append('image', user.image);
     form_data.append('content', user.content);
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
-      .post('/user/image', form_data, {
+      .post(`${process.env.REACT_APP_BASE_URL_API}/user/image`, form_data, {
         headers: {
           'content-type': 'multipart/form-data',
         },
@@ -152,13 +152,13 @@ const Account = () => {
     event.preventDefault();
     setButtonLoading(true);
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = sessionStorage.getItem('AuthToken');
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     const formRequest = {
       schoolName: user.schoolName
     };
     axios
-      .post('/user', formRequest)
+      .post(`${process.env.REACT_APP_BASE_URL_API}/user`, formRequest)
       .then(() => {
         setButtonLoading(false);
       })

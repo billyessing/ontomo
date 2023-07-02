@@ -1,5 +1,5 @@
 export const authMiddleWare = (history) => {
-  const authToken = localStorage.getItem('AuthToken');
+  const authToken = sessionStorage.getItem('AuthToken');
   if (authToken === null) {
     history.push('/login');
   }

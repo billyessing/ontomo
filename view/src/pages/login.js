@@ -66,8 +66,8 @@ const Login = () => {
       password: password
     };
     try {
-      const response = await axios.post('/login', userData);
-      localStorage.setItem('AuthToken', `Bearer ${response.data.token}`);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL_API}/login`, userData);
+      sessionStorage.setItem('AuthToken', `Bearer ${response.data.token}`);
       setLoading(false);
       navigate('/');
     } catch (error) {
