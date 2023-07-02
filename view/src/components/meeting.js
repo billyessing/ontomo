@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { DialogTitle, DialogContent } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -13,7 +13,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -32,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     position: 'relative'
+  },
+  meetingCard: {
+    width: '100%',
+    display: 'grid'
   },
   title: {
     marginLeft: theme.spacing(2),
@@ -149,6 +152,7 @@ const Meeting = () => {
     const meetingId = data.meeting.meetingId;
 
     try {
+      setDeletingMeetingId(meetingId);
       await axios.delete(`${process.env.REACT_APP_BASE_URL_API}/meeting/${meetingId}`);
       // Fetch the updated data and update the state
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/meetings`);
@@ -168,11 +172,11 @@ const Meeting = () => {
     setOpen(true);
   };
 
-  const handleViewOpen = (data) => {
-    setTitle(data.meeting.title);
-    setLink(data.meeting.link);
-    setViewOpen(true);
-  };
+  // const handleViewOpen = (data) => {
+  //   setTitle(data.meeting.title);
+  //   setLink(data.meeting.link);
+  //   setViewOpen(true);
+  // };
 
   const handleClickOpen = () => {
     setMeetingId('');
@@ -209,7 +213,7 @@ const Meeting = () => {
     axios.defaults.headers.common = { Authorization: `${authToken}` };
 
     try {
-      await axios(options);
+      await axios(options)
       setOpen(false);
       // Fetch the updated data and update the state
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL_API}/meetings`);
@@ -228,7 +232,6 @@ const Meeting = () => {
   const handleClose = (event) => {
     setOpen(false);
   };
-
 
   if (uiLoading) {
     return (
@@ -307,8 +310,15 @@ const Meeting = () => {
             <Grid item xs={12} key={meeting.meetingId}>
               <Card variant="outlined">
                 <CardContent>
-                  <Button style={{textTransform: 'none'}} href={meeting.link} size="large" color="primary" startIcon={<OpenInNewIcon fontSize="small"/>}>
-                    Open {meeting.title} 
+                  <Button
+                    href={meeting.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textTransform: 'none' }}
+                    size="large" color="primary"
+                    startIcon={<OpenInNewIcon fontSize="small" />}
+                  >
+                    Open {meeting.title}
                   </Button>
                   <Typography className={classes.pos} color="textSecondary">
                     {dayjs(meeting.createdAt).fromNow()}
@@ -339,14 +349,17 @@ const Meeting = () => {
                     disabled={user.email !== meeting.email}
                     onClick={() => deleteMeetingHandler({ meeting })}
                   >
-                    Delete
+                    {deletingMeetingId === meeting.meetingId ? (
+                      <CircularProgress size={20} color="primary" /> // Display loading spinner while deleting
+                    ) : (
+                      'Delete'
+                    )}
                   </Button>
                 </CardActions>
               </Card>
             </Grid>
           ))}
         </Grid>
-
         <Dialog
           onClose={handleViewClose}
           aria-labelledby="customized-dialog-title"

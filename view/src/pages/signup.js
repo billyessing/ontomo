@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -8,12 +9,11 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import withStyles from '@material-ui/core/styles/withStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import axios from 'axios';
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -34,9 +34,11 @@ const styles = (theme) => ({
   progress: {
     position: 'absolute'
   }
-});
+}));
 
-const Signup = ({ classes }) => {
+const Signup = () => {
+  const classes = useStyles();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     schoolName: '',
     email: '',
@@ -45,8 +47,6 @@ const Signup = ({ classes }) => {
     errors: [],
     loading: false
   });
-
-  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setState({
@@ -65,7 +65,6 @@ const Signup = ({ classes }) => {
       password: state.password,
       confirmPassword: state.confirmPassword
     };
-
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL_API}/signup`, newUserData);
@@ -184,4 +183,4 @@ const Signup = ({ classes }) => {
   );
 };
 
-export default withStyles(styles)(Signup);
+export default Signup;

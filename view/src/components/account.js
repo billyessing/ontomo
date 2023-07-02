@@ -222,9 +222,10 @@ const Account = () => {
           <Divider />
           <CardContent>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
+                  width='50%'
                   label="School name"
                   margin="dense"
                   name="schoolName"
@@ -233,7 +234,7 @@ const Account = () => {
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
                   label="Email"
