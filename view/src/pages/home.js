@@ -58,17 +58,7 @@ const Home = () => {
   }, [navigate]);
 
   if (uiLoading) {
-    return (
-      <CircularProgress
-        size={theme.spacing(4)}
-        sx={{
-          position: "fixed",
-          zIndex: "1000",
-          left: "50%",
-          top: "35%",
-        }}
-      />
-    );
+    return <CircularProgress size={theme.spacing(4)} />;
   }
 
   return (
@@ -76,11 +66,11 @@ const Home = () => {
       <Drawer variant="permanent" anchor="left">
         <Toolbar disableGutters>
           <Avatar src={profilePicture} variant="rounded" />
-          <Typography>{schoolName}</Typography>
+          <Typography variant="h1">{schoolName}</Typography>
         </Toolbar>
         <List>
           <ListItemButton key="Logout" onClick={logoutHandler}>
-            <ListItemIcon sx={{ minWidth: 0, paddingRight: "16px" }}>
+            <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
             <ListItemText primary="Logout" />

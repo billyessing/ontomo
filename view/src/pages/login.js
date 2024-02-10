@@ -1,4 +1,5 @@
 import { useTheme } from "@emotion/react";
+
 import {
   Avatar,
   Button,
@@ -52,9 +53,7 @@ const Login = () => {
       sx={theme.components.AuthContainer}
     >
       <Avatar variant="rounded">Ontomo</Avatar>
-      <Typography component="h1" variant="h5">
-        Log in
-      </Typography>
+      <Typography variant="h1">Log in</Typography>
       <form noValidate style={{ width: "100%" }} onSubmit={handleSubmit}>
         <div style={theme.components.AuthForm}>
           {errors.general && <Typography>{errors.general}</Typography>}

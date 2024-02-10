@@ -19,64 +19,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "@emotion/react";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import axios from "axios";
 import { authMiddleWare } from "../util/auth";
-
-// const useStyles = makeStyles((theme) => ({
-//   content: {
-//     flexGrow: 1,
-//     padding: theme.spacing(3),
-//   },
-//   appBar: {
-//     position: "relative",
-//   },
-//   title: {
-//     marginLeft: theme.spacing(2),
-//     flex: 1,
-//   },
-//   submitButton: {
-//     display: "block",
-//     color: "white",
-//     textAlign: "center",
-//     position: "absolute",
-//     top: 14,
-//     right: 10,
-//   },
-//   floatingButton: {
-//     position: "fixed",
-//     bottom: 0,
-//     right: 0,
-//   },
-//   form: {
-//     width: "98%",
-//     marginLeft: 13,
-//     marginTop: theme.spacing(3),
-//   },
-//   toolbar: theme.mixins.toolbar,
-//   root: {
-//     minWidth: 470,
-//   },
-//   bullet: {
-//     display: "inline-block",
-//     margin: "0 2px",
-//     transform: "scale(0.8)",
-//   },
-//   pos: {
-//     marginBottom: 9,
-//     paddingLeft: 9,
-//   },
-//   viewRoot: {
-//     margin: 0,
-//     width: "600px",
-//     padding: theme.spacing(2),
-//   },
-//   closeButton: {
-//     position: "absolute",
-//     right: theme.spacing(1),
-//     top: theme.spacing(1),
-//     color: theme.palette.grey[500],
-//   },
-// }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -151,17 +96,7 @@ const Meeting = () => {
   };
 
   if (uiLoading) {
-    return (
-      <CircularProgress
-        size={theme.spacing(4)}
-        sx={{
-          position: "fixed",
-          zIndex: "1000",
-          left: "50%",
-          top: "35%",
-        }}
-      />
-    );
+    return <CircularProgress size={theme.spacing(4)} />;
   }
 
   return (
@@ -189,13 +124,13 @@ const Meeting = () => {
               </CardContent>
               <CardActions>
                 <Button
-                  style={{ textTransform: "none" }}
                   href={meeting.link}
                   size="large"
                   color="primary"
                   target="_blank"
                 >
                   Join
+                  <OpenInNewIcon sx={{ height: "18px", width: "18px" }} />
                 </Button>
               </CardActions>
             </Card>
@@ -208,7 +143,7 @@ const Meeting = () => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle>New group</DialogTitle>
+        <DialogTitle>New meeting</DialogTitle>
         <DialogContent>
           <TextField
             variant="outlined"
