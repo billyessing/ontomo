@@ -1,81 +1,31 @@
+import LogoutIcon from "@mui/icons-material/Logout";
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Account from "../components/account";
 import Meeting from "../components/meeting";
-
-import AppBar from "@material-ui/core/AppBar";
-import Avatar from "@material-ui/core/Avatar";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import NotesIcon from "@material-ui/icons/Notes";
-
-import { makeStyles } from "@material-ui/core/styles";
 import { authMiddleWare } from "../util/auth";
 
-const drawerWidth = 240;
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  avatar: {
-    height: 110,
-    width: 100,
-    flexShrink: 0,
-    flexGrow: 0,
-    marginTop: 20,
-  },
-  uiProgress: {
-    position: "fixed",
-    zIndex: "1000",
-    height: "31px",
-    width: "31px",
-    left: "50%",
-    top: "35%",
-  },
-  toolbar: theme.mixins.toolbar,
-}));
-
 const Home = () => {
-  const classes = useStyles();
+  const theme = useTheme();
   const navigate = useNavigate();
-  const [render, setRender] = useState(false);
+
   const [schoolName, setSchoolName] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
   const [uiLoading, setUiLoading] = useState(true);
-
-  const loadAccountPage = () => {
-    setRender(true);
-  };
-
-  const loadMeetingPage = () => {
-    setRender(false);
-  };
 
   const logoutHandler = () => {
     localStorage.removeItem("AuthToken");
@@ -107,68 +57,44 @@ const Home = () => {
     fetchData();
   }, [navigate]);
 
-  if (uiLoading === true) {
+  if (uiLoading) {
     return (
-      <div className={classes.root}>
-        {uiLoading && (
-          <CircularProgress size={150} className={classes.uiProgress} />
-        )}
-      </div>
-    );
-  } else {
-    return (
-      <div className={classes.root}>
-        <CssBaseline />
-        <AppBar position="fixed" className={classes.appBar}>
-          <Toolbar>
-            <Typography variant="h6" noWrap>
-              Ontomo
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          className={classes.drawer}
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-        >
-          <div className={classes.toolbar} />
-          <Divider />
-          <center>
-            <Avatar
-              src={profilePicture}
-              className={classes.avatar}
-              variant="square"
-            />
-            <p>{schoolName}</p>
-          </center>
-          <Divider />
-          <List>
-            <ListItem button key="Meeting" onClick={loadMeetingPage}>
-              <ListItemIcon>
-                <NotesIcon />
-              </ListItemIcon>
-              <ListItemText primary="Meeting" />
-            </ListItem>
-            {/* <ListItem button key="Account" onClick={loadAccountPage}>
-              <ListItemIcon>
-                <AccountBoxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Account" />
-            </ListItem> */}
-            <ListItem button key="Logout" onClick={logoutHandler}>
-              <ListItemIcon>
-                <ExitToAppIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItem>
-          </List>
-        </Drawer>
-        <div>{render ? <Account /> : <Meeting />}</div>
-      </div>
+      <CircularProgress
+        size={theme.spacing(4)}
+        sx={{
+          position: "fixed",
+          zIndex: "1000",
+          left: "50%",
+          top: "35%",
+        }}
+      />
     );
   }
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <Drawer variant="permanent" anchor="left">
+        <Toolbar disableGutters>
+          <Avatar src={profilePicture} variant="rounded" />
+          <Typography>{schoolName}</Typography>
+        </Toolbar>
+        <List>
+          <ListItemButton key="Logout" onClick={logoutHandler}>
+            <ListItemIcon sx={{ minWidth: 0, paddingRight: "16px" }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        </List>
+      </Drawer>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
+      >
+        <Meeting />
+      </Box>
+    </Box>
+  );
 };
 
 export default Home;

@@ -1,75 +1,44 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-
-import axios from 'axios';
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  },
-  customError: {
-    color: 'red',
-    fontSize: '0.8rem',
-    marginTop: 10
-  },
-  progress: {
-    position: 'absolute'
-  }
-}));
+import { useTheme } from "@emotion/react";
+import {
+  Avatar,
+  Button,
+  Container,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const classes = useStyles();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const theme = useTheme();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
-    if (event.target.name === 'email') {
+    if (event.target.id === "email") {
       setEmail(event.target.value);
-    } else if (event.target.name === 'password') {
+    } else if (event.target.id === "password") {
       setPassword(event.target.value);
     }
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
     setLoading(true);
     const userData = {
       email: email,
-      password: password
+      password: password,
     };
     try {
-      const response = await axios.post('/login', userData);
-      localStorage.setItem('AuthToken', `Bearer ${response.data.token}`);
+      const response = await axios.post("/login", userData);
+      localStorage.setItem("AuthToken", `Bearer ${response.data.token}`);
       setLoading(false);
-      navigate('/');
+      navigate("/");
     } catch (error) {
       setErrors(error.response.data);
       setLoading(false);
@@ -77,36 +46,32 @@ const Login = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Login
-        </Typography>
-        <form className={classes.form} noValidate>
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={theme.components.AuthContainer}
+    >
+      <Avatar variant="rounded">Ontomo</Avatar>
+      <Typography component="h1" variant="h5">
+        Log in
+      </Typography>
+      <form noValidate style={{ width: "100%" }} onSubmit={handleSubmit}>
+        <div style={theme.components.AuthForm}>
+          {errors.general && <Typography>{errors.general}</Typography>}
           <TextField
-            variant="outlined"
-            margin="normal"
             required
             fullWidth
             id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            label="Email"
+            placeholder="Enter your email address"
             autoFocus
             helperText={errors.email}
             error={errors.email ? true : false}
             onChange={handleChange}
           />
           <TextField
-            variant="outlined"
-            margin="normal"
             required
             fullWidth
-            name="password"
             label="Password"
             type="password"
             id="password"
@@ -116,31 +81,17 @@ const Login = () => {
             onChange={handleChange}
           />
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            className={classes.submit}
             onClick={handleSubmit}
-            disabled={loading || !email || !password}
+            disabled={loading}
           >
-            Sign In
-            {loading && <CircularProgress size={30} className={classes.progress} />}
+            Log in
           </Button>
-          <Grid container alignItems="center">
-            <Grid item>
-              <Link href="signup" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
-          {errors.general && (
-            <Typography variant="body2" className={classes.customError}>
-              {errors.general}
-            </Typography>
-          )}
-        </form>
-      </div>
+          <Link href="signup">Don't have an account? Sign up</Link>
+        </div>
+      </form>
     </Container>
   );
 };

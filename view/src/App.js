@@ -1,21 +1,26 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/login';
-import Signup from './pages/signup';
-import Home from './pages/home';
+import React from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Home from "./pages/home";
+import Login from "./pages/login";
+import Signup from "./pages/signup";
 
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import theme from "./theme";
 
 function App() {
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route exact path='/login' element={<Login/>} />
-          <Route exact path="/signup" element={<Signup/>}/>
-          <Route exact path="/" element={<Home/>}/>
-        </Routes>
-      </div>
-    </Router>
+    <>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Routes>
+            <Route exact path="/login" element={<Login />} />
+            <Route exact path="/signup" element={<Signup />} />
+            <Route exact path="/" element={<Home />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </>
   );
 }
 

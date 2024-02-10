@@ -1,103 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { CloudUploadIcon } from "@mui/icons-material";
 import {
-  Typography,
-  CircularProgress,
+  Button,
   Card,
   CardActions,
   CardContent,
+  CircularProgress,
   Divider,
-  Button,
   Grid,
   TextField,
-} from '@material-ui/core';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import axios from 'axios';
-import { authMiddleWare } from '../util/auth';
+  Typography,
+} from "@mui/material";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authMiddleWare } from "../util/auth";
 
-const useStyles = makeStyles((theme) => ({
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  toolbar: theme.mixins.toolbar,
-  root: {},
-  details: {
-    display: 'flex',
-  },
-  avatar: {
-    height: 110,
-    width: 100,
-    flexShrink: 0,
-    flexGrow: 0,
-  },
-  locationText: {
-    paddingLeft: '15px',
-  },
-  buttonProperty: {
-    position: 'absolute',
-    top: '50%',
-  },
-  uiProgess: {
-    position: 'fixed',
-    zIndex: '1000',
-    height: '31px',
-    width: '31px',
-    left: '50%',
-    top: '35%',
-  },
-  progess: {
-    position: 'absolute',
-  },
-  uploadButton: {
-    marginLeft: '8px',
-    margin: theme.spacing(1),
-  },
-  customError: {
-    color: 'red',
-    fontSize: '0.8rem',
-    marginTop: 10,
-  },
-  submitButton: {
-    marginTop: '10px',
-  },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   content: {
+//     flexGrow: 1,
+//     padding: theme.spacing(3),
+//   },
+//   toolbar: theme.mixins.toolbar,
+//   root: {},
+//   details: {
+//     display: 'flex',
+//   },
+//   avatar: {
+//     height: 110,
+//     width: 100,
+//     flexShrink: 0,
+//     flexGrow: 0,
+//   },
+//   locationText: {
+//     paddingLeft: '15px',
+//   },
+//   buttonProperty: {
+//     position: 'absolute',
+//     top: '50%',
+//   },
+//   uiProgess: {
+//     position: 'fixed',
+//     zIndex: '1000',
+//     height: '31px',
+//     width: '31px',
+//     left: '50%',
+//     top: '35%',
+//   },
+//   progess: {
+//     position: 'absolute',
+//   },
+//   uploadButton: {
+//     marginLeft: '8px',
+//     margin: theme.spacing(1),
+//   },
+//   customError: {
+//     color: 'red',
+//     fontSize: '0.8rem',
+//     marginTop: 10,
+//   },
+//   submitButton: {
+//     marginTop: '10px',
+//   },
+// }));
 
 const Account = () => {
-  const classes = useStyles();
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
-    schoolName: '',
-    email: '',
+    schoolName: "",
+    email: "",
     partnerSchools: [],
-    profilePicture: '',
+    profilePicture: "",
   });
   const [uiLoading, setUiLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
-  const [imageError, setImageError] = useState('');
+  const [imageError, setImageError] = useState("");
 
   useEffect(() => {
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
-      .get('/user')
+      .get("/user")
       .then((response) => {
         setUser((prevUser) => ({
           ...prevUser,
           schoolName: response.data.userCredentials.schoolName,
           email: response.data.userCredentials.email,
-          partnerSchools: response.data.userCredentials.partnerSchools
+          partnerSchools: response.data.userCredentials.partnerSchools,
         }));
 
         setUiLoading(false);
       })
       .catch((error) => {
         if (error.response && error.response.status === 403) {
-          navigate('/login');
+          navigate("/login");
         } else {
           console.log(error);
           setUiLoading(false);
@@ -123,15 +120,15 @@ const Account = () => {
     event.preventDefault();
     setUiLoading(true);
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = localStorage.getItem("AuthToken");
     let form_data = new FormData();
-    form_data.append('image', user.image);
-    form_data.append('content', user.content);
+    form_data.append("image", user.image);
+    form_data.append("content", user.content);
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
-      .post('/user/image', form_data, {
+      .post("/user/image", form_data, {
         headers: {
-          'content-type': 'multipart/form-data',
+          "content-type": "multipart/form-data",
         },
       })
       .then(() => {
@@ -139,11 +136,11 @@ const Account = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 403) {
-          navigate('/login');
+          navigate("/login");
         } else {
           console.log(error);
           setUiLoading(false);
-          setImageError('Error in posting the data');
+          setImageError("Error in posting the data");
         }
       });
   };
@@ -152,19 +149,19 @@ const Account = () => {
     event.preventDefault();
     setButtonLoading(true);
     authMiddleWare(navigate);
-    const authToken = localStorage.getItem('AuthToken');
+    const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     const formRequest = {
-      schoolName: user.schoolName
+      schoolName: user.schoolName,
     };
     axios
-      .post('/user', formRequest)
+      .post("/user", formRequest)
       .then(() => {
         setButtonLoading(false);
       })
       .catch((error) => {
         if (error.response && error.response.status === 403) {
-          navigate('/login');
+          navigate("/login");
         } else {
           console.log(error);
           setButtonLoading(false);
@@ -174,21 +171,21 @@ const Account = () => {
 
   if (uiLoading) {
     return (
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        {uiLoading && <CircularProgress size={150} className={classes.uiProgess} />}
+      <main>
+        <div />
+        {uiLoading && <CircularProgress size={150} />}
       </main>
     );
   }
 
   return (
-    <main className={classes.content}>
-      <div className={classes.toolbar} />
-      <Card className={clsx(classes.root, classes)}>
+    <main>
+      <div />
+      <Card>
         <CardContent>
-          <div className={classes.details}>
+          <div>
             <div>
-              <Typography className={classes.locationText} gutterBottom variant="h4">
+              <Typography gutterBottom variant="h4">
                 {user.schoolName} {user.lastName}
               </Typography>
               <Button
@@ -197,7 +194,6 @@ const Account = () => {
                 type="submit"
                 size="small"
                 startIcon={<CloudUploadIcon />}
-                className={classes.uploadButton}
                 onClick={profilePictureHandler}
               >
                 Upload Photo
@@ -205,19 +201,19 @@ const Account = () => {
               <input type="file" onChange={handleImageChange} />
 
               {imageError ? (
-                <div className={classes.customError}>
+                <div>
                   Wrong Image Format || Supported Format are PNG and JPG
                 </div>
               ) : null}
             </div>
           </div>
-          <div className={classes.progress} />
+          <div />
         </CardContent>
         <Divider />
       </Card>
 
       <br />
-      <Card className={clsx(classes.root, classes)}>
+      <Card>
         <form autoComplete="off" noValidate>
           <Divider />
           <CardContent>
@@ -244,24 +240,26 @@ const Account = () => {
                   value={user.email}
                 />
               </Grid>
-              {user.partnerSchools ?
-              (<Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Partner Schools"
-                  margin="dense"
-                  name="partnerSchools"
-                  variant="outlined"
-                  disabled
-                  value={user.partnerSchools.join(", ")}
-                /> 
-              </Grid>) : "" }
+              {user.partnerSchools ? (
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Partner Schools"
+                    margin="dense"
+                    name="partnerSchools"
+                    variant="outlined"
+                    disabled
+                    value={user.partnerSchools.join(", ")}
+                  />
+                </Grid>
+              ) : (
+                ""
+              )}
             </Grid>
           </CardContent>
           <Divider />
           <CardActions>
             <Button
-              className={classes.submitButton}
               color="primary"
               variant="contained"
               type="submit"
@@ -270,7 +268,7 @@ const Account = () => {
             >
               Save details
             </Button>
-            {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress} />}
+            {buttonLoading && <CircularProgress size={24} />}
           </CardActions>
         </form>
       </Card>
