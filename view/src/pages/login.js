@@ -77,7 +77,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL_API}/login`,
+        `${process.env.NODE_ENV === 'development' ? 'http://localhost:5001/paul-1904c/us-central1/api' : process.env.REACT_APP_BASE_URL_API}/login`,
         userData,
         axiosConfig
       );

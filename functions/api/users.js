@@ -1,64 +1,52 @@
-const cors = require('cors');
 const { admin, db } = require('../util/admin');
-const config = require('../util/config');
-
+const { validateLoginData, validateSignUpData } = require('../util/validators');
 const firebase = require('firebase/compat/app');
+const config = require('../util/config');
 require('firebase/compat/auth');
 require('firebase/compat/storage');
 
 
 firebase.initializeApp(config);
 
-const { validateLoginData, validateSignUpData } = require('../util/validators');
-
-
-const corsOptions = {
-  origin: 'https://ontomo.org', // Allows only requests from this domain
-  methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed HTTP methods
-};
-
 
 // Login
-exports.loginUser = (request, response) => {
-  cors(corsOptions)(request, response, () => {
+exports.loginUser = (req, res) => {
+  const user = {
+    email: req.body.email,
+    password: req.body.password
+  };
 
-    const user = {
-      email: request.body.email,
-      password: request.body.password
-    };
+  const { valid, errors } = validateLoginData(user);
+  if (!valid) return res.status(400).json(errors);
 
-    const { valid, errors } = validateLoginData(user);
-    if (!valid) return response.status(400).json(errors);
-
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(user.email, user.password)
-      .then((data) => {
-        return data.user.getIdToken();
-      })
-      .then((token) => {
-        return response.json({ token });
-      })
-      .catch((error) => {
-        console.error(error);
-        return response.status(403).json({ general: 'Wrong credentials, please try again.' });
-      });
-  });
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(user.email, user.password)
+    .then((data) => {
+      return data.user.getIdToken();
+    })
+    .then((token) => {
+      return res.json({ token });
+    })
+    .catch((error) => {
+      console.error(error);
+      return res.status(403).json({ general: 'Wrong credentials, please try again.' });
+    });
 };
 
 
 // Signup
-exports.signUpUser = (request, response) => {
+exports.signUpUser = (req, res) => {
   const newUser = {
-    schoolName: request.body.schoolName,
-    email: request.body.email,
-    password: request.body.password,
-    confirmPassword: request.body.confirmPassword,
+    schoolName: req.body.schoolName,
+    email: req.body.email,
+    password: req.body.password,
+    confirmPassword: req.body.confirmPassword,
   };
 
   const { valid, errors } = validateSignUpData(newUser);
 
-  if (!valid) return response.status(400).json(errors);
+  if (!valid) return res.status(400).json(errors);
 
   let token, userId;
   db
@@ -66,7 +54,7 @@ exports.signUpUser = (request, response) => {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        return response.status(400).json({ email: 'Email already in use.' });
+        return res.status(400).json({ email: 'Email already in use.' });
       } else {
         return firebase
           .auth()
@@ -93,14 +81,14 @@ exports.signUpUser = (request, response) => {
         .set(userCredentials);
     })
     .then(() => {
-      return response.status(201).json({ token });
+      return res.status(201).json({ token });
     })
     .catch((err) => {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
-        return response.status(400).json({ email: 'Email already in use.' });
+        return res.status(400).json({ email: 'Email already in use.' });
       } else {
-        return response.status(500).json({ general: 'Something went wrong, please try again.' });
+        return res.status(500).json({ general: 'Something went wrong, please try again.' });
       }
     });
 }
@@ -120,22 +108,22 @@ deleteImage = (imageName) => {
 
 
 // Upload profile picture
-exports.uploadProfilePhoto = (request, response) => {
+exports.uploadProfilePhoto = (req, res) => {
   const BusBoy = require('busboy');
   const path = require('path');
   const os = require('os');
   const fs = require('fs');
-  const busboy = new BusBoy({ headers: request.headers });
+  const busboy = new BusBoy({ headers: req.headers });
 
   let imageFileName;
   let imageToBeUploaded = {};
 
   busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
     if (mimetype !== 'image/png' && mimetype !== 'image/jpeg') {
-      return response.status(400).json({ error: 'Wrong file type submited' });
+      return res.status(400).json({ error: 'Wrong file type submited' });
     }
     const imageExtension = filename.split('.')[filename.split('.').length - 1];
-    imageFileName = `${request.user.email}.${imageExtension}`;
+    imageFileName = `${req.user.email}.${imageExtension}`;
     const filePath = path.join(os.tmpdir(), imageFileName);
     imageToBeUploaded = { filePath, mimetype };
     file.pipe(fs.createWriteStream(filePath));
@@ -155,49 +143,49 @@ exports.uploadProfilePhoto = (request, response) => {
       })
       .then(() => {
         const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
-        return db.doc(`/users/${request.user.email}`).update({
+        return db.doc(`/users/${req.user.email}`).update({
           imageUrl
         });
       })
       .then(() => {
-        return response.json({ message: 'Image uploaded successfully' });
+        return res.json({ message: 'Image uploaded successfully' });
       })
       .catch((error) => {
         console.error(error);
-        return response.status(500).json({ error: error.code });
+        return res.status(500).json({ error: error.code });
       });
   });
-  busboy.end(request.rawBody);
+  busboy.end(req.rawBody);
 };
 
 
-exports.getUserDetail = (request, response) => {
+exports.getUserDetail = (req, res) => {
   let userData = {};
   db
-    .doc(`/users/${request.user.email}`)
+    .doc(`/users/${req.user.email}`)
     .get()
     .then((doc) => {
       if (doc.exists) {
         userData.userCredentials = doc.data();
-        return response.json(userData);
+        return res.json(userData);
       }
     })
     .catch((error) => {
       console.error(error);
-      return response.status(500).json({ error: error.code });
+      return res.status(500).json({ error: error.code });
     });
 }
 
 
-exports.updateUserDetails = (request, response) => {
-  let document = db.collection('users').doc(`${request.user.email}`);
-  document.update(request.body)
+exports.updateUserDetails = (req, res) => {
+  let document = db.collection('users').doc(`${req.user.email}`);
+  document.update(req.body)
     .then(() => {
-      response.json({ message: 'Updated successfully' });
+      res.json({ message: 'Updated successfully' });
     })
     .catch((error) => {
       console.error(error);
-      return response.status(500).json({
+      return res.status(500).json({
         message: "Cannot Update the value"
       });
     });

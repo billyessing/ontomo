@@ -17,7 +17,7 @@ const data = {
 
 
 async function createRoom() {
-  const response = await fetch(`${BASE_URL}/meetings`, {
+  const res = await fetch(`${BASE_URL}/meetings`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${API_KEY}`,
@@ -26,22 +26,22 @@ async function createRoom() {
     body: JSON.stringify(data),
   });
 
-  if (!response.ok) {
-    const errorMessage = await response.text();
+  if (!res.ok) {
+    const errorMessage = await res.text();
     throw new Error(`Error creating room: ${errorMessage}`);
   }
 
-  return response.json();
+  return res.json();
 }
 
-exports.createRoom = async (request, response) => {
+exports.createRoom = async (req, res) => {
   try {
     const roomData = await createRoom();
     console.log("Room URL:", roomData.roomUrl);
-    response.json(roomData);
+    res.json(roomData);
   } catch (error) {
     console.error(error);
-    response.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
