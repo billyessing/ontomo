@@ -86,7 +86,7 @@ const Signup = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+        <Avatar style={{ backgroundColor: '#3ab09e', color: 'white' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -155,7 +155,8 @@ const Signup = () => {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
+            // color="primary"
+            style={{ backgroundColor: '#3ab09e', color: 'white' }}
             className={classes.submit}
             onClick={handleSubmit}
             disabled={

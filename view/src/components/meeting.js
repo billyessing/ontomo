@@ -255,7 +255,10 @@ const Meeting = () => {
         </IconButton>
 
         <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-          <AppBar className={classes.appBar}>
+          <AppBar 
+            className={classes.appBar}
+            style={{ backgroundColor: '#3ab09e'}}
+            >
             <Toolbar>
               <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
                 <CloseIcon />
@@ -315,7 +318,8 @@ const Meeting = () => {
                     target="_blank"
                     rel="noreferrer"
                     style={{ textTransform: 'none' }}
-                    size="large" color="primary"
+                    size="large" 
+                    color="primary"
                     startIcon={<OpenInNewIcon fontSize="small" />}
                   >
                     Open {meeting.title}

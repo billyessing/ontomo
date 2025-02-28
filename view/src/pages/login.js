@@ -11,8 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
-
 import axios from 'axios';
+
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -61,15 +62,29 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+
     const userData = {
       email: email,
       password: password
     };
+
+    const axiosConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true // Important for CORS
+    };
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL_API}/login`, userData);
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL_API}/login`,
+        userData,
+        axiosConfig
+      );
+
       sessionStorage.setItem('AuthToken', `Bearer ${response.data.token}`);
       setLoading(false);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       setErrors(error.response.data);
       setLoading(false);
@@ -80,7 +95,7 @@ const Login = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+        <Avatar style={{ backgroundColor: '#3ab09e', color: 'white' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -119,13 +134,14 @@ const Login = () => {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
+            // color="primary"
+            style={{ backgroundColor: '#3ab09e', color: 'white' }}
             className={classes.submit}
             onClick={handleSubmit}
             disabled={loading || !email || !password}
           >
             Sign In
-            {loading && <CircularProgress size={30} className={classes.progress} />}
+            {loading && <CircularProgress size={30} className={classes.progress} style={{ color: 'white' }} />}
           </Button>
           <Grid container alignItems="center">
             <Grid item>
@@ -144,5 +160,7 @@ const Login = () => {
     </Container>
   );
 };
+
+axios.defaults.withCredentials = true;
 
 export default Login;

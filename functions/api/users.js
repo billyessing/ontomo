@@ -1,3 +1,4 @@
+const cors = require('cors');
 const { admin, db } = require('../util/admin');
 const config = require('../util/config');
 
@@ -10,29 +11,39 @@ firebase.initializeApp(config);
 
 const { validateLoginData, validateSignUpData } = require('../util/validators');
 
+
+const corsOptions = {
+  origin: 'https://ontomo.org', // Allows only requests from this domain
+  methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed HTTP methods
+};
+
+
 // Login
 exports.loginUser = (request, response) => {
-  const user = {
-    email: request.body.email,
-    password: request.body.password
-  };
+  cors(corsOptions)(request, response, () => {
 
-  const { valid, errors } = validateLoginData(user);
-  if (!valid) return response.status(400).json(errors);
+    const user = {
+      email: request.body.email,
+      password: request.body.password
+    };
 
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(user.email, user.password)
-    .then((data) => {
-      return data.user.getIdToken();
-    })
-    .then((token) => {
-      return response.json({ token });
-    })
-    .catch((error) => {
-      console.error(error);
-      return response.status(403).json({ general: 'Wrong credentials, please try again.' });
-    });
+    const { valid, errors } = validateLoginData(user);
+    if (!valid) return response.status(400).json(errors);
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(user.email, user.password)
+      .then((data) => {
+        return data.user.getIdToken();
+      })
+      .then((token) => {
+        return response.json({ token });
+      })
+      .catch((error) => {
+        console.error(error);
+        return response.status(403).json({ general: 'Wrong credentials, please try again.' });
+      });
+  });
 };
 
 
@@ -181,13 +192,13 @@ exports.getUserDetail = (request, response) => {
 exports.updateUserDetails = (request, response) => {
   let document = db.collection('users').doc(`${request.user.email}`);
   document.update(request.body)
-  .then(()=> {
-      response.json({message: 'Updated successfully'});
-  })
-  .catch((error) => {
+    .then(() => {
+      response.json({ message: 'Updated successfully' });
+    })
+    .catch((error) => {
       console.error(error);
-      return response.status(500).json({ 
-          message: "Cannot Update the value"
+      return response.status(500).json({
+        message: "Cannot Update the value"
       });
-  });
+    });
 }

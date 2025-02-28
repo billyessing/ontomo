@@ -1,15 +1,29 @@
 const functions = require('firebase-functions');
 const express = require('express');
 const auth = require('./util/auth');
+const cors = require('cors');
 
 const app = express();
 
+app.use((req, res, next) => {
+  res.set('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+  res.set('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+  next();
+});
+
 // meetings
 const {
-    getAllMeetings,
-    postOneMeeting,
-    deleteMeeting,
-    editMeeting
+  getAllMeetings,
+  postOneMeeting,
+  deleteMeeting,
+  editMeeting
 } = require('./api/meetings')
 
 

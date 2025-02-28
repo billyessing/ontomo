@@ -112,17 +112,20 @@ const Home = () => {
   if (uiLoading === true) {
     return (
       <div className={classes.root}>
-        {uiLoading && <CircularProgress size={150} className={classes.uiProgress} />}
+        {uiLoading && <CircularProgress size={100} className={classes.uiProgress} />}
       </div>
     );
   } else {
     return (
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar position="fixed" className={classes.appBar}>
+        <AppBar 
+          position="fixed" 
+          className={classes.appBar}             
+          style={{ backgroundColor: '#3ab09e' }}>
           <Toolbar>
             <Typography variant="h6" noWrap>
-              Ontomo
+              ONTOMO　｜　オントモ
             </Typography>
           </Toolbar>
         </AppBar>
